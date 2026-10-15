@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Select Year</title>
+    <style>
+        body,
+        h1,
+        p,
+        a,
+        div {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #fce4ec;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            padding: 2rem;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            margin-left: 1rem;
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-btn {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 3rem;
+        }
+
+        .year-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            perspective: 1000px;
+        }
+
+        .year-card {
+            background-color: #ffffff;
+            color: #e67e22;
+            text-decoration: none;
+            padding: 4rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hover: hovered card forward, others pull back */
+        .year-selection:hover .year-card {
+            transform: scale(0.93) translateZ(-20px);
+            opacity: 0.65;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .year-selection:hover .year-card:hover {
+            transform: scale(1.12) translateZ(30px);
+            opacity: 1;
+            box-shadow: 0 0 36px 6px rgba(230, 126, 34, 0.45);
+            color: #d35400;
+        }
+
+        footer {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+    <div class="header-bar">
+        ⚙ Admin Mode
+        <a href="logout.html" class="logout-btn">Logout</a>
+    </div>
+    <div class="container">
+        <header>
+            <h1>Select Academic Year (Admin)</h1>
+            <p>Managing branch: <strong id="branch-display">your branch</strong></p>
+            <div style="margin-top: 20px;">
+                <a href="admin.html" class="back-btn">← Back to Branches</a>
+            </div>
+        </header>
+        <main>
+            <div class="year-selection">
+                <a href="admin_semesters.html?year=1" class="year-card">1st Year</a>
+                <a href="admin_semesters.html?year=2" class="year-card">2nd Year</a>
+                <a href="admin_semesters.html?year=3" class="year-card">3rd Year</a>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2025 Academic Portal. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const branch = params.get('branch');
+            if (branch) {
+                document.getElementById('branch-display').textContent = branch.toUpperCase();
+                document.querySelectorAll('.year-card').forEach(card => {
+                    card.href = card.href + '&branch=' + encodeURIComponent(branch);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Subjects</title>
+    <style>
+        /* Basic Reset & Font Styling */
+        body, h1, p, a, div, ul, li, button, input {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 1rem;
+        }
+        .logout-btn {
+            margin-left: 1rem; padding: 5px 10px; background-color: #e74c3c;
+            color: white; text-decoration: none; border-radius: 5px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        /* Subject Management Area */
+        .subjects-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: left;
+        }
+
+        /* Add Subject Form */
+        .add-subject-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        #new-subject-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        #add-subject-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background-color: #27ae60;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #add-subject-btn:hover {
+            background-color: #229954;
+        }
+
+        /* Subject List */
+        #subject-list {
+            list-style: none;
+        }
+
+        .subject-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .subject-item:last-child {
+            border-bottom: none;
+        }
+
+        .subject-name {
+            flex-grow: 1;
+            font-size: 1.1rem;
+        }
+
+        .subject-name a {
+            text-decoration: none;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            color: #495057;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: block; /* Make it a block to fill the space */
+        }
+
+        .subject-name a:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+            color: #3498db;
+        }
+
+
+        .subject-item button {
+            margin-left: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .subject-item button:hover {
+            opacity: 0.8;
+        }
+
+        .edit-btn { background-color: #3498db; }
+        .delete-btn { background-color: #e74c3c; }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+<body>
+
+    <div class="header-bar">
+        Welcome, <strong></strong>!
+        <a href="logout.html" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Manage Subjects</h1>
+            <p>
+                Branch: <strong id="branch-display"></strong> | Year: <strong id="year-display"></strong> | Semester: <strong id="semester-display"></strong>
+            </p>
+        </header>
+
+        <main>
+            <div class="subjects-container">
+                <div class="add-subject-form">
+                    <input type="text" id="new-subject-input" placeholder="Enter new subject name...">
+                    <button id="add-subject-btn">Add Subject</button>
+                </div>
+                <ul id="subject-list">
+                    <!-- Subject items will be dynamically inserted here by JavaScript -->
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Academic Portal. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Script to disable right-click and certain key combinations -->
+    <!-- <script>
+        // Disable right-click
+        // document.addEventListener('contextmenu', function(e) {
+        //     e.preventDefault();
+        // });
+
+        // Disable specific key combinations
+        // document.addEventListener('keydown', function(e) {
+        //     // Normalize event object
+        //     var event = e || window.event;
+
+        //     // Block Ctrl+C, Ctrl+V, Ctrl+U (with alert)
+        //     if (event.ctrlKey && (event.keyCode === 67 || event.keyCode === 86 || event.keyCode === 85 || event.keyCode === 117)) {
+        //         alert('This website is protected against attempts to clone. Your IP has been duly recorded on our server and if you persist it will be forwarded to the competent authorities');
+        //         event.preventDefault();
+        //         return false;
+        //     }
+
+        //     // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        //     if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); }
+
+        //     return true;
+        // });
+    </script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const branch = params.get('branch');
+            const year = params.get('year');
+            const semester = params.get('semester');
+
+            // Display context in the header
+            document.getElementById('branch-display').textContent = branch ? branch.toUpperCase() : 'N/A';
+            document.getElementById('year-display').textContent = year || 'N/A';
+            document.getElementById('semester-display').textContent = semester || 'N/A';
+
+            let subjects = []; // Data will be fetched from the server
+
+            const subjectList = document.getElementById('subject-list');
+            const newSubjectInput = document.getElementById('new-subject-input');
+            const addSubjectBtn = document.getElementById('add-subject-btn');
+
+            // Function to render the list of subjects
+            const renderSubjects = () => {
+                subjectList.innerHTML = ''; // Clear the list
+                subjects.forEach(subject => {
+                    const li = document.createElement('li');
+                    li.className = 'subject-item';
+                    li.dataset.id = subject.id; // Store database ID
+                    li.innerHTML = `
+                        <span class="subject-name">
+                            <!-- Link to the new chapters page, passing all parameters -->
+                            <a href="chapters.html?subject=${encodeURIComponent(subject.subject_name)}&semester=${semester}&year=${year}&branch=${branch}">${subject.subject_name}</a>
+                        </span>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    `;
+                    subjectList.appendChild(li);
+                });
+            };
+
+            // Function to fetch subjects from the server
+            const fetchSubjects = async () => {
+                try {
+                    const response = await fetch(`/api/subjects?branch=${branch}&year=${year}&semester=${semester}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                    subjects = await response.json();
+                    renderSubjects();
+                } catch (error) {
+                    console.error('Error fetching subjects:', error);
+                }
+            };
+
+            // Add a new subject
+            addSubjectBtn.addEventListener('click', async () => {
+                const newSubject = newSubjectInput.value.trim();
+                if (newSubject) {
+                    try {
+                        const response = await fetch('/api/subjects', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ subject_name: newSubject, branch, year, semester })
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            newSubjectInput.value = '';
+                            fetchSubjects(); // Just refresh the list, no alert needed
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error adding subject:', error);
+                    }
+                }
+            });
+
+            // Handle Edit and Delete clicks using event delegation
+            subjectList.addEventListener('click', (e) => {
+                const subjectItem = e.target.closest('.subject-item');
+                if (!subjectItem) return;
+
+                const subjectId = subjectItem.dataset.id;
+                const subjectName = subjectItem.querySelector('.subject-name a').textContent;
+
+                if (e.target.classList.contains('delete-btn')) {
+                    if (confirm(`Are you sure you want to delete "${subjectName}"?`)) {
+                        fetch(`/api/subjects/${subjectId}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) fetchSubjects(); // Refresh list
+                            else alert('Error: ' + result.error);
+                        });
+                    }
+                }
+                if (e.target.classList.contains('edit-btn')) {
+                    const newName = prompt("Enter the new name for the subject:", subjectName);
+                    if (newName && newName.trim() !== '' && newName.trim() !== subjectName) {
+                        fetch(`/api/subjects/${subjectId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ new_name: newName.trim() })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) fetchSubjects(); // Refresh list
+                            else alert('Error: ' + result.error);
+                        });
+                    }
+                }
+            });
+
+            // Initial render
+            fetchSubjects();
+        });
+    </script>
+
+</body>
+</html>

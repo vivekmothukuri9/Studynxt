@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #6a5acd;
+            background-image: url('corrected.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        .main-container {
+            position: relative;
+            width: 380px;
+            height: 550px;
+        }
+
+        .panel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem;
+            box-sizing: border-box;
+            transition: transform 0.6s ease-in-out, opacity 0.5s ease-in-out;
+            backface-visibility: hidden;
+        }
+
+        .panel.active {
+            transform: scale(1) rotateY(0deg);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .password-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-group input {
+            width: 100%;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon-hide {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .input-group input {
+            width: calc(100% - 2rem);
+            padding: 1rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #f39c12;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Fix autofill white background */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #1a1a2e inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.5);
+        }
+
+        .message {
+            color: #ffcccc;
+            margin-top: 0.8rem;
+            height: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .bottom-text a {
+            color: #f39c12;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- Admin Login Panel -->
+        <div id="admin-login-panel" class="panel active">
+            <h1>Admin Login</h1>
+            <form id="admin-login-form">
+                <input type="hidden" name="role" value="admin">
+                <div class="input-group">
+                    <input type="text" id="admin-username" name="login-username" placeholder="Admin Username" required>
+                </div>
+                <div class="input-group password-group">
+                    <input type="password" id="admin-password" name="login-password" placeholder="Admin Password"
+                        required>
+                    <span class="toggle-password" onclick="togglePassword('admin-password')">
+                        <svg class="icon-show" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="icon-hide" viewBox="0 0 24 24">
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.01L3 21">
+                            </path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </div>
+                <button type="submit" class="action-btn">Login as Admin</button>
+                <p class="message" id="admin-message"></p>
+            </form>
+            <div class="bottom-text">
+                <p style="margin-top: 1.5rem;"><a href="userlogin.html">← Back to Student Login</a></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Check local storage for token
+        if (localStorage.getItem('token') && localStorage.getItem('role') === 'admin') {
+            window.location.href = 'admin.html';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            const messageEl = document.getElementById('admin-message');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username_or_email: username, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.role !== 'admin') {
+                        messageEl.textContent = 'Account is not an admin.';
+                        return;
+                    }
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('username', data.username);
+                    window.location.href = 'admin.html';
+                } else {
+                    messageEl.textContent = data.error;
+                }
+            } catch (err) {
+                messageEl.textContent = 'Server error. Try again.';
+            }
+        }
+
+        document.getElementById('admin-login-form').addEventListener('submit', handleLogin);
+
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleContainer = passwordField.nextElementSibling;
+            const showIcon = toggleContainer.querySelector('.icon-show');
+            const hideIcon = toggleContainer.querySelector('.icon-hide');
+
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            if (type === 'password') {
+                showIcon.style.display = 'block';
+                hideIcon.style.display = 'none';
+            } else {
+                showIcon.style.display = 'none';
+                hideIcon.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Content Manager</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --light-gray: #f4f7f6;
+            --border-color: #ecf0f1;
+            --white: #ffffff;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        body,
+        h1,
+        h2,
+        p,
+        a,
+        div,
+        ul,
+        li,
+        button,
+        input {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: #333;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            margin-left: 1rem;
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: var(--secondary-color);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 0.75rem;
+        }
+
+        .main-controls {
+            text-align: center;
+            margin-bottom: 2rem;
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add CO Form Styling */
+        .add-co-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        #new-co-input {
+            flex-grow: 1;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.6rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #229954;
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+        }
+
+        /* Course Outcome Card */
+        .co-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .co-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .co-title {
+            font-size: 1.4rem;
+            color: var(--secondary-color);
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .co-title a {
+            text-decoration: none;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            color: #495057;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: block;
+        }
+
+        .co-title a:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+            color: var(--primary-color);
+        }
+
+        .co-controls button {
+            margin-left: 0.5rem;
+        }
+
+        .co-body {
+            padding: 1.5rem;
+            background-color: #fcfcfc;
+            display: none;
+            /* Hidden by default */
+            border-top: 1px solid var(--border-color);
+        }
+
+        .co-card.active .co-body {
+            display: block;
+            /* Show when card is active */
+        }
+
+        .co-content-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .co-content-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            background-color: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .item-icon {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        .item-text {
+            flex-grow: 1;
+        }
+
+        .item-text a {
+            color: var(--primary-color);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .item-text a:hover {
+            text-decoration: underline;
+        }
+
+        .co-body-controls {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="header-bar">
+        Welcome, <strong></strong>!
+        <a href="logout.html" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 id="subject-title"></h1>
+            <p>
+                Branch: <strong id="branch-display"></strong> | Year: <strong id="year-display"></strong> | Sem: <strong
+                    id="semester-display"></strong>
+            </p>
+        </header>
+
+        <main>
+
+            <div class="main-controls">
+                <div class="add-co-form">
+                    <input type="text" id="new-co-input" placeholder="Enter new Course Outcome (CO) title...">
+                    <button id="add-co-btn" class="btn btn-primary">Add CO</button>
+                </div>
+                <!-- Hidden file input for PDF uploads -->
+                <input type="file" id="pdf-upload-input" accept=".pdf" style="display: none;" />
+            </div>
+
+
+            <div id="co-container">
+                <!-- Course Outcome cards will be dynamically inserted here -->
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Academic Portal. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+
+    <!-- Script to disable right-click and certain key combinations -->
+    <!-- <script>
+        // Disable right-click
+        // document.addEventListener('contextmenu', function(e) {
+        //     e.preventDefault();
+        // });
+
+        // Disable specific key combinations
+        // document.addEventListener('keydown', function(e) {
+        //     // Normalize event object
+        //     var event = e || window.event;
+
+        //     // Block Ctrl+C, Ctrl+V, Ctrl+U (with alert)
+        //     if (event.ctrlKey && (event.keyCode === 67 || event.keyCode === 86 || event.keyCode === 85 || event.keyCode === 117)) {
+        //         alert('This website is protected against attempts to clone. Your IP has been duly recorded on our server and if you persist it will be forwarded to the competent authorities');
+        //         event.preventDefault();
+        //         return false;
+        //     }
+
+        //     // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        //     if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); }
+
+        //     return true;
+        // });
+    </script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM ELEMENTS ---
+            const coContainer = document.getElementById('co-container');
+            const newCoInput = document.getElementById('new-co-input');
+            const addCoBtn = document.getElementById('add-co-btn');
+            const pdfUploadInput = document.getElementById('pdf-upload-input');
+            const userRole = localStorage.getItem('role') || 'user';
+
+            // --- URL PARAMETER HANDLING ---
+            const params = new URLSearchParams(window.location.search);
+            const subject = params.get('subject');
+            const branch = params.get('branch');
+            const year = params.get('year');
+            const semester = params.get('semester');
+
+            document.getElementById('subject-title').textContent = subject || 'Content Manager';
+            document.getElementById('branch-display').textContent = branch ? branch.toUpperCase() : 'N/A';
+            document.getElementById('year-display').textContent = year || 'N/A';
+            document.getElementById('semester-display').textContent = semester || 'N/A';
+
+            // A variable to remember which CO we are adding a PDF to
+            let targetCoIdForUpload = null;
+
+            // --- FETCH DATA ---
+            const fetchContent = async () => {
+                // coContainer.innerHTML = '<p style="text-align:center; color:#777;">Loading content...</p>'; // Removed loading text
+                try {
+                    const response = await fetch(`/api/content?subject=${subject}&branch=${branch}&year=${year}&semester=${semester}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    const data = await response.json();
+                    render(data);
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    // Don't show a scary error if the response was just empty.
+                    // The render function will handle the "No outcomes" message.
+                    if (error.name !== 'SyntaxError') {
+                        coContainer.innerHTML = '<p style="text-align:center; color:red;">Failed to load content. Please check the server connection.</p>';
+                    }
+                }
+            };
+
+            // --- RENDER FUNCTION ---
+            const render = (courseOutcomes) => {
+                coContainer.innerHTML = ''; // Clear existing content
+                if (!courseOutcomes || courseOutcomes.length === 0) {
+                    coContainer.innerHTML = '<p style="text-align:center; color:#777;">No course outcomes have been added for this subject yet.</p>';
+                    return;
+                }
+
+                courseOutcomes.forEach(co => {
+                    const coCard = document.createElement('div');
+                    coCard.className = 'co-card';
+                    coCard.dataset.coId = co.id;
+
+                    // For users, make the card active by default so content is visible
+                    if (userRole !== 'admin') {
+                        coCard.classList.add('active');
+                    }
+
+                    let contentHtml = co.content.map(item => {
+                        const itemId = item.id; // Get topic ID
+                        let icon = '📄'; // Default for topic
+                        let text = '';
+                        if (item.type === 'pdf') {
+                            icon = '📎';
+                            // Create elements programmatically to prevent XSS
+                            text = document.createElement('span');
+                            text.textContent = 'PDF: ';
+                            const pdfLink = document.createElement('a');
+                            pdfLink.href = item.url;
+                            pdfLink.target = '_blank';
+                            pdfLink.textContent = item.name; // Use textContent to prevent XSS
+                            text.appendChild(pdfLink);
+                        } else if (item.type === 'link') {
+                            icon = '🔗';
+                            // Create elements programmatically to make it clickable and prevent XSS
+                            text = document.createElement('span');
+                            text.textContent = 'Link: ';
+                            const linkTag = document.createElement('a');
+                            linkTag.href = item.url;
+                            linkTag.target = '_blank';
+                            linkTag.textContent = item.title; // Use textContent to prevent XSS
+                            text.appendChild(linkTag);
+                        } else {
+                            // Create a link to topic_details.php
+                            const topicLink = document.createElement('a');
+                            topicLink.href = `admin_topic_details.html?topic_id=${itemId}`; // Pass topic ID
+                            topicLink.textContent = `Topic: ${item.text}`;
+                            text = topicLink;
+                        }
+
+                        // Add delete button for admin
+                        let deleteBtn = '';
+                        if (userRole === 'admin') {
+                            deleteBtn = `<button class="btn btn-danger btn-small delete-topic-btn" data-topic-id="${itemId}">Delete</button>`;
+                        }
+
+                        const li = document.createElement('li');
+                        li.className = 'co-content-item';
+                        li.dataset.topicId = itemId;
+                        li.innerHTML = `
+                                    <span class="item-icon">${icon}</span>
+                                    <span class="item-text"></span>
+                                    ${deleteBtn}`;
+                        li.querySelector('.item-text').append(text); // Safely append the node or string
+                        return li.outerHTML;
+                    }).join('');
+
+                    // Admin controls
+                    let adminControls = '';
+                    if (userRole === 'admin') {
+                        adminControls = `
+                            <div class="co-header">
+                                <div class="co-title">
+                                    <a href="#" onclick="return false;">${co.title}</a>
+                                </div>
+                                <div class="co-controls">
+                                    <button class="btn btn-primary btn-small edit-co-btn">Edit</button>
+                                    <button class="btn btn-danger btn-small delete-co-btn">Delete</button>
+                                </div>
+                            </div>
+                            <div class="co-body">
+                                <strong>Content:</strong>
+                                <ul class="co-content-list">${contentHtml || '<p style="color:#888; margin-top:1rem;">No content added yet.</p>'}</ul>
+                                <div class="co-body-controls">
+                                    <button class="btn btn-success btn-small add-topic-btn">Add Topic</button>
+                                    <button class="btn btn-success btn-small add-pdf-btn">Add PDF</button>
+                                    <button class="btn btn-success btn-small add-link-btn">Add Link</button>
+                                </div>
+                            </div>`;
+                    } else {
+                        // User view (no controls)
+                        adminControls = `
+                            <div class="co-header">
+                                <div class="co-title"><a href="#" onclick="return false;">${co.title}</a></div>
+                            </div>
+                            <div class="co-body">
+                                <strong>Content:</strong>
+                                <ul class="co-content-list">${contentHtml || '<p style="color:#888; margin-top:1rem;">No content added yet.</p>'}</ul>
+                            </div>`;
+                    }
+
+                    coCard.innerHTML = `
+                        ${adminControls}
+                    `;
+                    coContainer.appendChild(coCard);
+                });
+            };
+
+            // --- EVENT LISTENERS ---
+            if (userRole === 'admin' && addCoBtn) {
+                addCoBtn.addEventListener('click', async () => {
+                    const title = newCoInput.value.trim();
+                    if (title && title.trim()) {
+                        try {
+                            const response = await fetch('/api/content', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                                body: JSON.stringify({ action: 'add_co', title: title, subject, branch, year, semester })
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                newCoInput.value = ''; // Clear input on success
+                                fetchContent(); // Just refresh the content
+                            } else {
+                                alert('Error: ' + (result.error || 'Could not add CO.'));
+                            }
+                        } catch (error) {
+                            console.error('Error adding CO:', error);
+                        }
+                    }
+                });
+            }
+
+            // Main event handler for all buttons inside the CO cards
+            coContainer.addEventListener('click', async (e) => {
+                if (userRole !== 'admin') return;
+
+                const coCard = e.target.closest('.co-card');
+                if (!coCard) return;
+                const coId = parseInt(coCard.dataset.coId);
+
+                // Handle accordion toggle for the whole card header
+                if (e.target.closest('.co-header') && !e.target.closest('.co-controls')) {
+                    // Don't toggle if an edit/delete button was clicked
+                    coCard.classList.toggle('active');
+                    return; // Stop further execution for this click
+                }
+
+                // CO-level controls
+                if (e.target.classList.contains('edit-co-btn')) {
+                    const currentTitle = e.target.closest('.co-header').querySelector('.co-title').textContent;
+                    const newTitle = prompt("Enter the new title for the CO:", currentTitle);
+                    if (newTitle && newTitle.trim()) {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ action: 'edit_co', co_id: coId, title: newTitle.trim() })
+                        });
+                        if (response.ok) {
+                            alert('CO updated successfully!');
+                            fetchContent();
+                        }
+                    }
+                }
+                if (e.target.classList.contains('delete-co-btn')) {
+                    const currentTitle = e.target.closest('.co-header').querySelector('.co-title').textContent;
+                    if (confirm(`Are you sure you want to delete "${currentTitle}" and all its content?`)) {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ action: 'delete_co', co_id: coId })
+                        });
+                        if (response.ok) fetchContent();
+                    }
+                }
+
+                // Content-level controls
+                if (e.target.classList.contains('add-topic-btn')) {
+                    const text = prompt("Enter the topic description:");
+                    if (text && text.trim()) {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ action: 'add_topic', co_id: coId, title: text.trim() })
+                        });
+                        if (response.ok) fetchContent();
+                    }
+                }
+                if (e.target.classList.contains('add-pdf-btn')) {
+                    // Remember which CO triggered the upload and open the file dialog
+                    targetCoIdForUpload = coId;
+                    pdfUploadInput.click();
+                }
+                if (e.target.classList.contains('add-link-btn')) {
+                    const title = prompt("Enter the link title:");
+                    const url = prompt("Enter the URL:");
+                    if (title && title.trim() && url && url.trim()) {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ action: 'add_link', co_id: coId, title: title.trim(), url: url.trim() })
+                        });
+                        if (response.ok) fetchContent();
+                    }
+                }
+
+                // Topic delete button
+                if (e.target.classList.contains('delete-topic-btn')) {
+                    const topicId = parseInt(e.target.dataset.topicId);
+                    if (confirm('Are you sure you want to delete this content item?')) {
+                        const response = await fetch('/api/content', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                            body: JSON.stringify({ action: 'delete_topic', topic_id: topicId })
+                        });
+                        if (response.ok) fetchContent();
+                    }
+                }
+            });
+
+            // Event listener for when a file is selected in the file dialog
+            if (userRole === 'admin' && pdfUploadInput) {
+                pdfUploadInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file && targetCoIdForUpload) {
+                        const formData = new FormData();
+                        formData.append('pdf_file', file);
+                        formData.append('co_id', targetCoIdForUpload);
+
+                        const response = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData });
+                        if (response.ok) fetchContent();
+                        else alert('File upload failed.');
+                    }
+                });
+            }
+
+            // Initial Render
+            fetchContent();
+        });
+    </script>
+</body>
+
+</html>

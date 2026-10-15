@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .topbar {
+            background: #1f2937;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .topbar h1 {
+            font-size: 1.4rem;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right span {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            padding: 0.4rem 1rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Layout */
+        .page-content {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Section card */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #1f2937;
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Add Branch Form */
+        .add-form {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-form input {
+            flex-grow: 1;
+            padding: 0.7rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-form input:focus {
+            border-color: #3498db;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-green {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background: #219a52;
+        }
+
+        .btn-blue {
+            background: #3498db;
+            color: white;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .btn-blue:hover {
+            background: #2980b9;
+        }
+
+        .btn-red {
+            background: #e74c3c;
+            color: white;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .btn-red:hover {
+            background: #c0392b;
+        }
+
+        /* Branch list */
+        .branch-list {
+            list-style: none;
+        }
+
+        .branch-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f2f5;
+            gap: 0.75rem;
+        }
+
+        .branch-item:last-child {
+            border-bottom: none;
+        }
+
+        .branch-badge {
+            background: #eaf4fd;
+            color: #2980b9;
+            border-radius: 6px;
+            padding: 0.3rem 0.8rem;
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .branch-item .actions {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Edit inline */
+        .edit-input {
+            flex-grow: 1;
+            padding: 0.35rem 0.7rem;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        /* Status message */
+        .status-msg {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        .status-msg.ok {
+            color: #27ae60;
+        }
+
+        .status-msg.err {
+            color: #e74c3c;
+        }
+
+        .empty-msg {
+            color: #999;
+            font-style: italic;
+            padding: 0.5rem 0;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <h1>⚙ Admin Panel</h1>
+        <div class="topbar-right">
+            <span id="admin-name-display"></span>
+            <a href="students.html" class="back-btn">← Back to Portal</a>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Branch Management -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🏫 Manage Branches</h2>
+            </div>
+            <div class="card-body">
+                <div class="add-form">
+                    <input type="text" id="new-branch-input" placeholder="New branch name (e.g. MECH)" maxlength="20">
+                    <button class="btn btn-green" id="add-branch-btn">+ Add Branch</button>
+                </div>
+                <div class="status-msg" id="branch-status"></div>
+                <ul class="branch-list" id="branch-list">
+                    <li class="empty-msg">Loading branches...</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        const username = localStorage.getItem('username');
+
+        // Redirect non-admins
+        if (!token || role !== 'admin') {
+            window.location.href = 'students.html';
+        }
+
+        // Show admin name
+        const nameEl = document.getElementById('admin-name-display');
+        if (nameEl && username) nameEl.textContent = `Logged in as: ${username}`;
+
+        const branchList = document.getElementById('branch-list');
+        const branchStatus = document.getElementById('branch-status');
+        const newBranchInput = document.getElementById('new-branch-input');
+
+        function showStatus(msg, isError = false) {
+            branchStatus.textContent = msg;
+            branchStatus.className = 'status-msg ' + (isError ? 'err' : 'ok');
+            setTimeout(() => { branchStatus.textContent = ''; }, 3000);
+        }
+
+        // Fetch and render branches
+        async function loadBranches() {
+            try {
+                const res = await fetch('/api/branches');
+                const branches = await res.json();
+                if (!branches.length) {
+                    branchList.innerHTML = '<li class="empty-msg">No branches yet. Add one above!</li>';
+                    return;
+                }
+                branchList.innerHTML = '';
+                branches.forEach(b => {
+                    const li = document.createElement('li');
+                    li.className = 'branch-item';
+                    li.dataset.id = b.id;
+                    li.innerHTML = `
+                        <a href="admin_year-selection.html?branch=${encodeURIComponent(b.name)}" class="branch-badge" style="text-decoration:none;">${b.name}</a>
+                        <div class="actions">
+                            <button class="btn btn-blue edit-btn">Edit</button>
+                            <button class="btn btn-red delete-btn">Delete</button>
+                        </div>
+                    `;
+                    branchList.appendChild(li);
+                });
+            } catch (e) {
+                branchList.innerHTML = '<li class="empty-msg" style="color:red;">Failed to load branches.</li>';
+            }
+        }
+
+        // Add branch
+        document.getElementById('add-branch-btn').addEventListener('click', async () => {
+            const name = newBranchInput.value.trim();
+            if (!name) { showStatus('Please enter a branch name.', true); return; }
+            try {
+                const res = await fetch('/api/branches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    newBranchInput.value = '';
+                    showStatus(`Branch "${data.name}" added!`);
+                    loadBranches();
+                } else {
+                    showStatus(data.error, true);
+                }
+            } catch (e) {
+                showStatus('Server error.', true);
+            }
+        });
+
+        // Also allow Enter key
+        newBranchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('add-branch-btn').click();
+        });
+
+        // Edit / Delete via delegation
+        branchList.addEventListener('click', async (e) => {
+            const li = e.target.closest('.branch-item');
+            if (!li) return;
+            const id = li.dataset.id;
+            const badge = li.querySelector('.branch-badge');
+
+            if (e.target.classList.contains('delete-btn')) {
+                if (!confirm(`Delete branch "${badge.textContent}"?`)) return;
+                try {
+                    const res = await fetch(`/api/branches/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) { showStatus('Branch deleted.'); loadBranches(); }
+                    else showStatus(data.error, true);
+                } catch (e) { showStatus('Server error.', true); }
+            }
+
+            if (e.target.classList.contains('edit-btn')) {
+                const currentName = badge.textContent;
+                // Inline edit
+                const actionsDiv = li.querySelector('.actions');
+                li.innerHTML = `
+                    <input class="edit-input" type="text" value="${currentName}" maxlength="20">
+                    <div class="actions">
+                        <button class="btn btn-green save-btn">Save</button>
+                        <button class="btn btn-red cancel-btn">Cancel</button>
+                    </div>
+                `;
+                li.dataset.id = id;
+                li.querySelector('.edit-input').focus();
+
+                li.querySelector('.cancel-btn').addEventListener('click', () => loadBranches());
+                li.querySelector('.save-btn').addEventListener('click', async () => {
+                    const newName = li.querySelector('.edit-input').value.trim();
+                    if (!newName) { showStatus('Name cannot be empty.', true); return; }
+                    try {
+                        const res = await fetch(`/api/branches/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ name: newName })
+                        });
+                        const data = await res.json();
+                        if (data.success) { showStatus('Branch updated!'); loadBranches(); }
+                        else showStatus(data.error, true);
+                    } catch (e) { showStatus('Server error.', true); }
+                });
+            }
+        });
+
+        loadBranches();
+    </script>
+</body>
+
+</html>

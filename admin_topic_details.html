@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="te">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topic Editor</title>
+    <!-- Google Icons for chatbot -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- DotLottie Player for chatbot animation -->
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.7.1/dist/dotlottie-wc.js" type="module"></script>
+    <style>
+        :root { --primary-color: #3498db; --success-color: #27ae60; }
+        /* Light Theme (Default) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f4f7f6;
+            color: #2c3e50;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            position: relative; /* Positioning context for the image */
+            max-width: 900px;
+            margin: auto;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            /* Adjust padding for header-bar */
+            padding-top: 4rem; /* To make space for the fixed header bar */
+            padding-left: 2rem; /* To make space for the fixed menu icon */
+            padding-right: 2rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        h1 { color: #2c3e50; margin-bottom: 1.5rem; }
+        textarea {
+            width: 100%;
+            height: 450px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.7;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        button {
+            background-color: var(--success-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #229954; }
+        button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .message { margin-top: 1rem; font-weight: bold; }
+
+        /* Decorative tubelight image */
+        .tube-img {
+            position: absolute;
+            top: 1rem; /* Position it just above the title */
+            left: 50%; /* Center it horizontally */
+            transform: translateX(-50%); /* Fine-tune the centering */
+            width: 250px;
+            height: auto; /* Maintain aspect ratio */
+            opacity: 0.8;
+            cursor: pointer; /* Make it clickable */
+            transition: filter 0.4s ease, opacity 0.4s ease; /* Add transition for glow */
+        }
+
+        /* Dark Theme Styles */
+        body.dark-theme {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .dark-theme .container {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .dark-theme h1 { color: #f7fafc; }
+        .dark-theme textarea {
+            background-color: #1a202c;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+        .dark-theme p i { color: #a0aec0; }
+        .dark-theme .tube-img {
+            opacity: 1;
+            /* Add a glow effect using drop-shadow filter */
+            filter: drop-shadow(0 6px 20px rgba(255, 255, 255, 0.7));
+        }
+
+        /* Header Bar */
+        .header-bar {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            color: #333;
+            font-size: 1rem;
+            z-index: 100; /* Ensure it's above other content */
+        }
+        .logout-btn {
+            margin-left: 1rem; padding: 5px 10px; background-color: #e74c3c;
+            color: white; text-decoration: none; border-radius: 5px;
+        }
+
+        /* --- Sidebar Menu Styles --- */
+        .sidebar {
+            height: 100%;
+            width: 260px;
+            position: fixed;
+            z-index: 2500;
+            top: 0;
+            left: 0;
+            background-color: #1f2937;
+            overflow-x: hidden;
+            transition: 0.3s;
+            transform: translateX(-100%);
+            padding-top: 60px;
+        }
+        .sidebar.active {
+            transform: translateX(0);
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            display: block;
+            transition: 0.2s;
+        }
+        .sidebar a:hover {
+            color: #fff;
+            background-color: #34495e;
+        }
+        .sidebar .sidebar-user {
+            padding: 20px; color: #ecf0f1; text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2.5rem;
+        }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2400;
+            display: none; /* Hidden by default */
+        }
+        .menu-icon {
+            position: absolute;
+            top: 1rem;
+            left: 2rem;
+            font-size: 2rem;
+            color: #333;
+            cursor: pointer;
+            z-index: 1500; /* Ensure it's above content but below sidebar */
+        }
+
+
+        /* --- Feedback Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 { color: #2c3e50; }
+        #close-modal-btn { font-size: 1.8rem; background: none; border: none; cursor: pointer; color: #888; }
+
+        .feedback-form .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .feedback-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .feedback-form input, .feedback-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .feedback-form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .feedback-form button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #27ae60;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #feedback-message { margin-top: 1rem; font-weight: bold; }
+
+        /* --- Chatbot Styles --- */
+        .chat-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .chat-icon:hover {
+            transform: scale(1.1);
+        }
+        .chat-icon .material-symbols-outlined {
+            font-size: 2rem; /* Default size for the icon if dotlottie is not used */
+        }
+        .chat-icon dotlottie-wc {
+            pointer-events: none; /* This is the key fix */
+        }
+
+        .chat-window {
+            position: fixed;
+            /* Initial position and size will be set by JavaScript */
+            width: 350px; /* Default width */
+            height: 550px; /* Default height */
+            min-width: 300px;
+            min-height: 400px;
+            max-width: 95vw; /* Max width relative to viewport */
+            max-height: 95vh; /* Max height relative to viewport */
+            background-color: #2c3e50; /* Dark background */
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            display: none; /* Hidden by default, JS will manage 'active' class */
+            resize: none; /* Disable native resize, we'll implement custom */
+        }
+        .chat-window.active {
+            display: flex; /* Show when active */
+        }
+        
+        /* Responsive styles for chatbot on mobile */
+        @media (max-width: 768px) {
+            .chat-window {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100%;
+                max-height: 100%;
+                top: 0 !important; /* Override JS positioning */
+                left: 0 !important; /* Override JS positioning */
+                border-radius: 0;
+                resize: none; /* Disable resize on mobile */
+            }
+        }
+
+
+        .chat-header {
+            background-color: #1f2937; /* Darker header */
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative; /* For settings menu positioning */
+        }
+        .chat-header h2 { font-size: 1.2rem; }
+        #chat-settings-btn {
+            cursor: pointer;
+            margin-left: auto; /* Pushes it to the right before the close button */
+            margin-right: 1rem;
+            color: #bdc3c7;
+            transition: color 0.2s;
+        }
+        #chat-settings-btn:hover { color: white; }
+        #close-chat-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+        /* Chat Settings Menu */
+        .chat-settings-menu {
+            position: absolute;
+            top: 55px; /* Position below the header */
+            right: 1rem;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1001;
+            display: none; /* Hidden by default */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .settings-item label { display: block; color: #e2e8f0; margin-bottom: 0.5rem; }
+        .settings-item select {
+            width: 100%; padding: 0.5rem; border-radius: 5px; background-color: #1a202c; color: white; border: 1px solid #4a5568;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+             color: #f1f1f1; /* Light text for dark background */
+        }
+        .chat-message {
+            max-width: 85%;
+            padding: 0.7rem 1rem;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative; /* Needed for icon positioning */
+        }
+        .chat-message p {
+            margin: 0;
+            padding-right: 25px; /* Space for the speak icon */
+        }
+        .speak-icon {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #aeb8c4;
+            transition: color 0.2s;
+        }
+        .speak-icon:hover { color: #ffffff; }
+        .chat-message.user { 
+            background-color: #3498db; /* Blue for user messages */
+            color: white; 
+            align-self: flex-end; 
+            border-bottom-right-radius: 4px;
+        }
+        .chat-message.bot { 
+            background-color: #374151; /* Grey for bot messages */
+            color: #e5e7eb;
+            align-self: flex-start; 
+            border-bottom-left-radius: 4px;
+        }
+        .chat-message.loading { background-color: #374151; align-self: flex-start; font-style: italic; color: #9ca3af; }
+
+        .chat-footer {
+            padding: 1rem;
+            border-top: 1px solid #374151; /* Darker border */
+            background-color: #1f2937;
+        }
+        #chat-form { display: flex; gap: 0.5rem; }
+        #chat-input {
+            flex-grow: 1;
+            padding: 0.7rem;
+            border-radius: 5px;
+            min-width: 50px; /* Prevent input from becoming too small */
+            font-size: 1rem;
+            background-color: #374151; /* Dark input */
+            color: white;
+            border: 1px solid #4b5563;
+        }
+        .chat-voice-btn {
+            padding: 0.7rem;
+            border: none;
+            background-color: transparent;
+            color: #bdc3c7;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5rem; /* Icon size */
+            flex-shrink: 0; /* Prevent this button from shrinking */
+        }
+        #chat-form button {
+            padding: 0.7rem 1rem;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-shrink: 0; /* Prevent this button from shrinking */
+            min-width: 65px;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+<body>
+    <div class="header-bar">
+        Welcome, <strong id="display-username"></strong>!
+        <a href="logout.html" class="logout-btn">Logout</a>
+    </div>
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <a href="#" class="close-btn" id="close-sidebar-btn">&times;</a>
+        <div class="sidebar-user">
+            Welcome,<br><strong id="sidebar-username"></strong>
+        </div>
+        <a href="#" id="open-profile-modal">Profile</a>
+        <a href="#" id="open-feedback-modal">Feedback</a>
+        <a href="logout.html">Logout</a>
+    </div>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <span class="material-symbols-outlined menu-icon" id="open-sidebar-btn">menu</span>
+
+    <div class="container">
+        <img src="tube.png" alt="Decorative Light" class="tube-img">
+        <h1 id="topic-title">Loading Topic...</h1>
+        <textarea id="topicContent" placeholder="Enter topic content here..."></textarea>
+        
+            <button onclick="saveContent()" id="saveButton">Save Content</button>
+            <p id="saveMessage" class="message"></p>
+        
+        
+            <p><i>Content is read-only.</i></p>
+        
+    </div>
+
+    <script>
+        const topicId = new URLSearchParams(window.location.search).get('topic_id');
+        const topicContentEl = document.getElementById('topicContent');
+        const topicTitleEl = document.getElementById('topic-title');
+        const saveButton = document.getElementById('saveButton');
+        const saveMessage = document.getElementById('saveMessage');
+        const userRole = localStorage.getItem('role') || 'user';
+
+        // --- Theme Switcher Logic ---
+        const themeSwitcherImg = document.querySelector('.tube-img');
+        const body = document.body;
+
+        // On page load, apply the saved theme from localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-theme');
+        }
+
+        // Add click event listener to the image
+        themeSwitcherImg.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            // Save the current theme preference to local storage
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        });
+
+        // Fetch and display the topic content when the page loads
+        async function loadContent() {
+            if (!topicId) return;
+            try {
+                const response = await fetch(`/api/content?action=get_topic&topic_id=${topicId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                const data = await response.json();
+                if (data.success) {
+                    topicTitleEl.textContent = data.title;
+                    topicContentEl.value = data.content || '';
+                    if (userRole !== 'admin') {
+                        topicContentEl.readOnly = true; // Make textarea read-only for non-admins
+                    }
+                } else {
+                    topicTitleEl.textContent = "Error";
+                    topicContentEl.value = "Could not load topic content: " + data.error;
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
+        }
+
+        // Save the content back to the database
+        async function saveContent() {
+            saveButton.disabled = true;
+            saveMessage.textContent = 'Saving...';
+            saveMessage.style.color = '#333';
+            const response = await fetch('/api/content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                body: JSON.stringify({ action: 'save_topic_content', topic_id: topicId, content: topicContentEl.value })
+            });
+            const result = await response.json();
+            saveMessage.textContent = result.success ? 'Content saved successfully!' : `Error: ${result.error}`;
+            saveMessage.style.color = result.success ? 'green' : 'red';
+            saveButton.disabled = false;
+        }
+
+        loadContent(); // Call loadContent after all DOM is ready and chatbot scripts are loaded
+    </script>
+
+    <!-- Script to disable right-click and certain key combinations -->
+    <!-- <script>
+        // Disable right-click
+        // document.addEventListener('contextmenu', function(e) {
+        //     e.preventDefault();
+        // });
+
+        // Disable specific key combinations
+        // document.addEventListener('keydown', function(e) {
+        //     // Normalize event object
+        //     var event = e || window.event;
+
+        //     // Block Ctrl+C, Ctrl+V, Ctrl+U (with alert)
+        //     // Block Ctrl+U (with alert), but allow Ctrl+C and Ctrl+V
+        //     if (event.ctrlKey && (event.keyCode === 85 || event.keyCode === 117)) { // 85 is 'U', 117 is 'u'
+        //         alert('This function is disabled.');
+        //         event.preventDefault();
+        //         return false;
+        //     }
+
+        //     // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        //     if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); }
+        // });
+    </script> -->
+</body>
+</html>

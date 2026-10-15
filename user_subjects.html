@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Subjects</title>
+    <style>
+        body, h1, p, a, div, ul, li {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 3rem;
+        }
+
+        /* New Card-based Design for Subjects */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .subject-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .subject-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            padding: 1.5rem;
+        }
+
+        .subject-card h2 {
+            font-size: 1.3rem;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .subject-card p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Subjects</h1>
+            <p>
+                Branch: <strong id="branch-display"></strong> | Year: <strong id="year-display"></strong> | Semester: <strong id="semester-display"></strong>
+            </p>
+        </header>
+
+        <main>
+            <div class="subjects-grid" id="subject-grid">
+                <!-- Subject cards will be dynamically inserted here by JavaScript -->
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Academic Portal. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Script to disable right-click and certain key combinations -->
+    <!-- <script>
+        // Disable right-click
+        // document.addEventListener('contextmenu', function(e) {
+        //     e.preventDefault();
+        // });
+
+        // Disable specific key combinations
+        // document.addEventListener('keydown', function(e) {
+        //     // Normalize event object
+        //     var event = e || window.event;
+
+        //     // Block Ctrl+C, Ctrl+V, Ctrl+U (with alert)
+        //     if (event.ctrlKey && (event.keyCode === 67 || event.keyCode === 86 || event.keyCode === 85 || event.keyCode === 117)) {
+        //         alert('This website is protected against attempts to clone. Your IP has been duly recorded on our server and if you persist it will be forwarded to the competent authorities');
+        //         event.preventDefault();
+        //         return false;
+        //     }
+
+        //     // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        //     if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); }
+
+        //     return true;
+        // });
+    </script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const branch = params.get('branch');
+            const year = params.get('year');
+            const semester = params.get('semester');
+
+            document.getElementById('branch-display').textContent = branch ? branch.toUpperCase() : 'N/A';
+            document.getElementById('year-display').textContent = year || 'N/A';
+            document.getElementById('semester-display').textContent = semester || 'N/A';
+
+            const subjectGrid = document.getElementById('subject-grid');
+
+            // Function to draw subject cards on the screen
+            const renderSubjects = (subjects) => {
+                subjectGrid.innerHTML = ''; // Clear any old content
+                if (subjects.length === 0) {
+                    subjectGrid.innerHTML = '<p style="grid-column: 1 / -1; color: #777;">No subjects have been added for this semester yet.</p>';
+                    return;
+                }
+                subjects.forEach(subject => {
+                    const card = document.createElement('div');
+                    card.className = 'subject-card';
+                    card.innerHTML = `
+                        <a href="chapters.html?subject=${encodeURIComponent(subject.subject_name)}&semester=${semester}&year=${year}&branch=${branch}">
+                            <h2>${subject.subject_name}</h2>
+                            <p>Click to view chapters and materials.</p>
+                        </a>
+                    `;
+                    subjectGrid.appendChild(card);
+                });
+            };
+            
+            // This is the most important part: Fetch subjects from the server API
+            fetch(`/api/subjects?branch=${branch}&year=${year}&semester=${semester}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+                .then(response => response.json())
+                .then(data => {
+                    // Once we get the data, draw it on the screen
+                    renderSubjects(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching subjects:', error);
+                    subjectGrid.innerHTML = '<p style="color: red;">Could not load subjects. Please try again later.</p>';
+                });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Login</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #6a5acd;
+            background-image: url('corrected.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        .main-container {
+            position: relative;
+            width: 380px;
+            height: 550px;
+        }
+
+        .panel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem;
+            box-sizing: border-box;
+            transition: transform 0.6s ease-in-out, opacity 0.5s ease-in-out;
+            backface-visibility: hidden;
+        }
+
+        .panel:not(.active) {
+            transform: scale(0.9) rotateY(30deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .panel.active {
+            transform: scale(1) rotateY(0deg);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .password-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-group input {
+            width: 100%;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon-hide {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .input-group input {
+            width: calc(100% - 2rem);
+            padding: 1rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #89f7fe;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Fix autofill white background */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #1a1a2e inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(102, 166, 255, 0.5);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .divider span {
+            padding: 0 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        .google-btn {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            background: #4285F4;
+            color: white;
+            font-size: 1rem;
+            font-family: Roboto, arial, sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+            transition: background-color .218s, border-color .218s, box-shadow .218s;
+            padding: 0;
+            position: relative;
+        }
+        
+        .google-btn:hover {
+            box-shadow: 0 0 3px 3px rgba(66,133,244,.3);
+        }
+        
+        .google-icon-wrapper {
+            position: absolute;
+            margin-top: 1px;
+            margin-left: 1px;
+            width: 38px;
+            height: 38px;
+            border-radius: 2px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .google-btn-text {
+            flex-grow: 1;
+            text-align: center;
+            padding-right: 38px;
+        }
+
+        .google-icon-wrapper svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .message {
+            color: #ffcccc;
+            margin-top: 0.8rem;
+            height: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .bottom-text a {
+            color: #89f7fe;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .password-requirements {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+            margin-top: -0.8rem;
+            margin-bottom: 1.2rem;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <!-- User Login Panel -->
+        <div id="user-login-panel" class="panel active">
+            <h1>User Login</h1>
+            <form id="login-form">
+                <input type="hidden" name="role" value="user">
+                <div class="input-group">
+                    <input type="text" id="login-username" name="login-username" placeholder="Username or Email"
+                        required>
+                </div>
+                <div class="input-group password-group">
+                    <input type="password" id="login-password" name="login-password" placeholder="Password" required>
+                    <span class="toggle-password" onclick="togglePassword('login-password')">
+                        <svg class="icon-show" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="icon-hide" viewBox="0 0 24 24">
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.01L3 21">
+                            </path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </div>
+                <button type="submit" class="action-btn">Login</button>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                
+                <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+                    <div class="google-icon-wrapper">
+                        <svg viewBox="0 0 48 48">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                            <path fill="none" d="M0 0h48v48H0z"></path>
+                        </svg>
+                    </div>
+                    <span class="google-btn-text">Sign in with Google</span>
+                </button>
+                
+                <p class="message" id="login-message"></p>
+            </form>
+            <div class="bottom-text">
+                <a href="forgot-password.html">Forgot Password?</a>
+                <p style="margin-top: 1rem;">Don't have an account? <a id="show-signup">Create one</a></p>
+                <p style="margin-top: 1.5rem;"><a href="adminlogin.html">Admin Login Portal</a></p>
+            </div>
+        </div>
+
+        <!-- User Sign Up Panel -->
+        <div id="signup-panel" class="panel">
+            <h1>Create Account</h1>
+            <form id="signup-form">
+                <div class="input-group">
+                    <input type="text" id="signup-username" name="signup-username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="signup-email" name="signup-email" placeholder="Email" required>
+                </div>
+                <div class="input-group password-group">
+                    <input type="password" id="signup-password" name="signup-password" placeholder="Password" required>
+                    <span class="toggle-password" onclick="togglePassword('signup-password')">
+                        <svg class="icon-show" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="icon-hide" viewBox="0 0 24 24">
+                            <path
+                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.01L3 21">
+                            </path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </div>
+                <p class="password-requirements">Min 6 characters, must include letters & numbers.</p>
+                <button type="submit" class="action-btn">Sign Up</button>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                
+                <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+                    <div class="google-icon-wrapper">
+                        <svg viewBox="0 0 48 48">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                            <path fill="none" d="M0 0h48v48H0z"></path>
+                        </svg>
+                    </div>
+                    <span class="google-btn-text">Sign up with Google</span>
+                </button>
+                
+                <p class="message" id="signup-message"></p>
+            </form>
+            <p class="bottom-text">Already have an account? <a id="show-signin">Sign In</a></p>
+        </div>
+
+    </div>
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Check local storage for token
+        if (localStorage.getItem('token')) {
+            window.location.href = 'students.html';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const messageEl = document.getElementById('login-message');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username_or_email: username, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.role === 'admin') {
+                        messageEl.textContent = 'Admins must log in via Admin Portal.';
+                        return;
+                    }
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('username', data.username);
+                    window.location.href = 'students.html';
+                } else {
+                    messageEl.textContent = data.error;
+                }
+            } catch (err) {
+                messageEl.textContent = 'Server error. Try again.';
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const messageEl = document.getElementById('signup-message');
+
+            try {
+                const res = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role: 'student' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    messageEl.textContent = 'Signup successful! Please log in.';
+                    messageEl.style.color = 'lightgreen';
+                    setTimeout(() => document.getElementById('show-signin').click(), 2000);
+                } else {
+                    messageEl.textContent = data.error;
+                }
+            } catch (err) {
+                messageEl.textContent = 'Server error. Try again.';
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', handleLogin);
+        document.getElementById('signup-form').addEventListener('submit', handleSignup);
+
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleContainer = passwordField.nextElementSibling;
+            const showIcon = toggleContainer.querySelector('.icon-show');
+            const hideIcon = toggleContainer.querySelector('.icon-hide');
+
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            if (type === 'password') {
+                showIcon.style.display = 'block';
+                hideIcon.style.display = 'none';
+            } else {
+                showIcon.style.display = 'none';
+                hideIcon.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const panels = document.querySelectorAll('.panel');
+
+            function showPanel(panelId) {
+                panels.forEach(panel => {
+                    if (panel.id === panelId) {
+                        panel.classList.add('active');
+                    } else {
+                        panel.classList.remove('active');
+                    }
+                });
+            }
+
+            // Links between user login and signup
+            document.getElementById('show-signup').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPanel('signup-panel');
+            });
+            document.getElementById('show-signin').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPanel('user-login-panel');
+            });
+        });
+
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://sabcccztdhqvdhkqgfqk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhYmNjY3p0ZGhxdmRoa3FnZnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNTIxNjksImV4cCI6MjEwMDcyODE2OX0.p90lxOZGo14SNp1iTSTwTr8zCB1c1Mas8jg1dzsYvn0';
+
+        let supabaseClient;
+        try {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch(e) {
+            alert("Error loading Supabase: " + e.message);
+        }
+
+        // Handle Google Sign-In Button Click
+        async function handleGoogleSignIn() {
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                });
+                if (error) {
+                    console.error("Error signing in:", error);
+                    alert("Error: " + error.message);
+                    document.getElementById('login-message').textContent = error.message;
+                }
+            } catch (err) {
+                alert("Sign-in process failed: " + err.message);
+            }
+        }
+
+        // Listen for Auth State Changes (When Google redirects back)
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    const accessToken = session.access_token;
+                    document.getElementById('login-message').textContent = "Authenticating with server...";
+                    
+                    try {
+                        // Send Supabase token to our custom backend to get a custom JWT
+                        const response = await fetch('/api/auth/supabase-login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ access_token: accessToken })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('role', data.role);
+                            localStorage.setItem('username', data.username);
+                            window.location.href = 'root.html';
+                        } else {
+                            document.getElementById('login-message').textContent = data.error || 'Login failed';
+                            alert("Backend auth failed: " + (data.error || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        document.getElementById('login-message').textContent = 'Server error during auth';
+                        alert("Server connection error!");
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

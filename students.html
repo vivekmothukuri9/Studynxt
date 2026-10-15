@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="collage.png" type="image/png">
+    <title>Student Portal</title>
+    <!-- Google Icons for chatbot -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- DotLottie Player for chatbot animation -->
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.7.1/dist/dotlottie-wc.js" type="module"></script>
+    <style>
+        body,
+        h1,
+        p,
+        a,
+        div {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f0e1;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            padding: 2rem;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            margin-left: 1rem;
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 1rem;
+            border: 3px solid black;
+            border-radius: 50%;
+        }
+
+        .institute-name {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 3rem;
+        }
+
+        .branch-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            perspective: 1000px;
+        }
+
+        .branch-card {
+            background-color: #fff;
+            color: #3498db;
+            text-decoration: none;
+            padding: 2.5rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hover: hovered card comes forward, others pull back */
+        .branch-selection:hover .branch-card {
+            transform: scale(0.93) translateZ(-20px);
+            opacity: 0.65;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .branch-selection:hover .branch-card:hover {
+            transform: scale(1.12) translateZ(30px);
+            opacity: 1;
+            box-shadow: 0 0 36px 6px rgba(52, 152, 219, 0.45);
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        footer {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* --- Sidebar Menu Styles --- */
+        .sidebar {
+            height: 100%;
+            width: 260px;
+            position: fixed;
+            z-index: 2500;
+            top: 0;
+            left: 0;
+            background-color: #1f2937;
+            overflow-x: hidden;
+            transition: 0.3s;
+            transform: translateX(-100%);
+            padding-top: 60px;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            display: block;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            color: #fff;
+            background-color: #34495e;
+        }
+
+        .sidebar .sidebar-user {
+            padding: 20px;
+            color: #ecf0f1;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2.5rem;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2400;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .menu-icon {
+            position: absolute;
+            top: 1rem;
+            left: 2rem;
+            font-size: 2rem;
+            color: #333;
+            cursor: pointer;
+            z-index: 1500;
+            /* Ensure it's above content but below sidebar */
+        }
+
+
+        /* --- Feedback Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+        }
+
+        #close-modal-btn {
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .feedback-form .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .feedback-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .feedback-form textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .feedback-form button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #27ae60;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #feedback-message {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* --- Chatbot Styles --- */
+        .chat-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .chat-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-icon .material-symbols-outlined {
+            font-size: 2rem;
+            /* Default size for the icon if dotlottie is not used */
+        }
+
+        .chat-icon dotlottie-wc {
+            pointer-events: none;
+            /* This is the key fix */
+        }
+
+        .chat-window {
+            position: fixed;
+            /* Initial position and size will be set by JavaScript */
+            width: 350px;
+            /* Default width */
+            height: 550px;
+            /* Default height */
+            min-width: 300px;
+            min-height: 400px;
+            max-width: 95vw;
+            /* Max width relative to viewport */
+            max-height: 95vh;
+            /* Max height relative to viewport */
+            background-color: #2c3e50;
+            /* Dark background */
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            display: none;
+            /* Hidden by default, JS will manage 'active' class */
+            resize: none;
+            /* Disable native resize, we'll implement custom */
+        }
+
+        .chat-window.active {
+            display: flex;
+            /* Show when active */
+        }
+
+        /* Responsive styles for chatbot on mobile */
+        @media (max-width: 768px) {
+            .chat-window {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100%;
+                max-height: 100%;
+                top: 0 !important;
+                /* Override JS positioning */
+                left: 0 !important;
+                /* Override JS positioning */
+                border-radius: 0;
+                resize: none;
+                /* Disable resize on mobile */
+            }
+        }
+
+
+        .chat-header {
+            background-color: #1f2937;
+            /* Darker header */
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            /* For settings menu positioning */
+        }
+
+        .chat-header h2 {
+            font-size: 1.2rem;
+        }
+
+        #chat-settings-btn {
+            cursor: pointer;
+            margin-left: auto;
+            /* Pushes it to the right before the close button */
+            margin-right: 1rem;
+            color: #bdc3c7;
+            transition: color 0.2s;
+        }
+
+        #chat-settings-btn:hover {
+            color: white;
+        }
+
+        #close-chat-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Chat Settings Menu */
+        .chat-settings-menu {
+            position: absolute;
+            top: 55px;
+            /* Position below the header */
+            right: 1rem;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1001;
+            display: none;
+            /* Hidden by default */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-item label {
+            display: block;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-item select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 5px;
+            background-color: #1a202c;
+            color: white;
+            border: 1px solid #4a5568;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            color: #f1f1f1;
+            /* Light text for dark background */
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 0.7rem 1rem;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            /* Needed for icon positioning */
+        }
+
+        .chat-message p {
+            margin: 0;
+            padding-right: 25px;
+            /* Space for the speak icon */
+        }
+
+        .speak-icon {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #aeb8c4;
+            transition: color 0.2s;
+        }
+
+        .speak-icon:hover {
+            color: #ffffff;
+        }
+
+        .chat-message.user {
+            background-color: #3498db;
+            /* Blue for user messages */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.bot {
+            background-color: #374151;
+            /* Grey for bot messages */
+            color: #e5e7eb;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.loading {
+            background-color: #374151;
+            align-self: flex-start;
+            font-style: italic;
+            color: #9ca3af;
+        }
+
+        .chat-footer {
+            padding: 1rem;
+            border-top: 1px solid #374151;
+            /* Darker border */
+            background-color: #1f2937;
+        }
+
+        #chat-form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 0.7rem;
+            border-radius: 5px;
+            min-width: 50px;
+            /* Prevent input from becoming too small */
+            font-size: 1rem;
+            background-color: #374151;
+            /* Dark input */
+            color: white;
+            border: 1px solid #4b5563;
+        }
+
+        .chat-voice-btn {
+            padding: 0.7rem;
+            border: none;
+            background-color: transparent;
+            color: #bdc3c7;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            /* Icon size */
+            flex-shrink: 0;
+            /* Prevent this button from shrinking */
+        }
+
+        #chat-form button {
+            padding: 0.7rem 1rem;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-shrink: 0;
+            /* Prevent this button from shrinking */
+            min-width: 65px;
+        }
+    </style>
+
+<style>
+    /* Disable text selection site-wide */
+    body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+    /* Re-enable text selection for input fields */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+</style>
+</head>
+
+<body>
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <a href="#" class="close-btn" id="close-sidebar-btn">&times;</a>
+        <div class="sidebar-user">
+            Welcome,<br><strong></strong>
+        </div>
+        <a href="#" id="open-profile-modal">Profile</a>
+        <a href="#" id="open-feedback-modal">Feedback</a>
+        <a href="admin.html" id="admin-panel-link" style="display:none; color:#f39c12; font-weight:bold;">⚙ Admin
+            Panel</a>
+        <a href="logout.html">Logout</a>
+    </div>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <span class="material-symbols-outlined menu-icon" id="open-sidebar-btn">menu</span>
+    <div class="header-bar">
+        Welcome, <strong id="display-username"></strong>!
+    </div>
+    <div class="container">
+        <header>
+            <img src="collage.png" alt="Institute Logo" class="logo">
+            <h2 class="institute-name">Government Institute Of Electronics</h2>
+            <h1>Welcome to the Student Portal</h1>
+            <p>Please select your branch to continue.</p>
+        </header>
+
+        <main>
+            <div class="branch-selection" id="branch-selection">
+                <p id="branches-loading" style="color:#888;">Loading branches...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Academic Portal. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal-overlay" id="feedback-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Feedback</h2>
+                <button id="close-modal-btn">&times;</button>
+            </div>
+            <form id="feedback-form" class="feedback-form">
+                <div class="input-group">
+                    <label for="student-feedback">Your Feedback</label>
+                    <textarea id="student-feedback" name="feedback" required></textarea>
+                </div>
+                <button type="submit">Submit Feedback</button>
+                <p id="feedback-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Profile</h2>
+                <button id="close-profile-btn">&times;</button>
+            </div>
+            <form id="profile-form" class="feedback-form">
+                <div class="input-group">
+                    <label for="profile-name">Full Name</label>
+                    <input type="text" id="profile-name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="input-group">
+                    <label for="student-pin">PIN Number</label>
+                    <input type="text" id="student-pin" name="pin" required>
+                </div>
+                <button type="submit">Update Profile</button>
+                <p id="profile-message"></p>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Chatbot Icon -->
+    <div class="chat-icon" id="chat-icon">
+        <!-- Using the new dotlottie-wc component with the local JSON file -->
+        <dotlottie-wc src="robot.lottie" speed="1"
+            style="width: 200px; height: 200px; filter: drop-shadow(2px 2px 0 black) drop-shadow(-2px -2px 0 black) drop-shadow(2px -2px 0 black) drop-shadow(-2px 2px 0 black);"
+            mode="forward" loop autoplay></dotlottie-wc>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <h2>Study Assistant</h2>
+            <span class="material-symbols-outlined" id="chat-settings-btn">settings</span>
+            <button id="close-chat-btn">&times;</button>
+        </div>
+        <!-- Chatbot Settings Menu -->
+        <div class="chat-settings-menu" id="chat-settings-menu">
+            <div class="settings-item">
+                <label for="voice-select">Bot Voice</label>
+                <select id="voice-select"></select>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <!-- Initial bot message -->
+            <div class="chat-message bot">
+                <p>Hello! How can I help you with your studies today? You can change my voice in the settings.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off">
+                <button type="button" id="voice-chat-btn" class="chat-voice-btn">
+                    <span class="material-symbols-outlined">mic</span>
+                </button>
+                <button type="submit" id="send-chat-btn">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show Admin Panel link if user is admin
+            const role = localStorage.getItem('role');
+            const adminLink = document.getElementById('admin-panel-link');
+            if (role === 'admin' && adminLink) adminLink.style.display = 'block';
+
+            // Fetch and render branches dynamically
+            const branchContainer = document.getElementById('branch-selection');
+            fetch('/api/branches')
+                .then(r => r.json())
+                .then(branches => {
+                    if (!branches.length) {
+                        branchContainer.innerHTML = '<p style="color:#888;">No branches available.</p>';
+                        return;
+                    }
+                    branchContainer.innerHTML = branches.map(b =>
+                        `<a href="year-selection.html?branch=${encodeURIComponent(b.name.toLowerCase())}" class="branch-card">${b.name}</a>`
+                    ).join('');
+                })
+                .catch(() => {
+                    branchContainer.innerHTML = '<p style="color:red;">Failed to load branches.</p>';
+                });
+
+            const chatIcon = document.getElementById('chat-icon');
+            const chatWindow = document.getElementById('chat-window');
+            const voiceChatBtn = document.getElementById('voice-chat-btn');
+            const closeChatBtn = document.getElementById('close-chat-btn');
+            const chatForm = document.getElementById('chat-form');
+            const chatSettingsBtn = document.getElementById('chat-settings-btn');
+            const chatSettingsMenu = document.getElementById('chat-settings-menu');
+            const chatInput = document.getElementById('chat-input');
+            const chatBody = document.getElementById('chat-body');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const closeFeedbackBtn = document.getElementById('close-modal-btn');
+            const openFeedbackFromSidebar = document.getElementById('open-feedback-modal');
+            const feedbackForm = document.getElementById('feedback-form');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const profileModal = document.getElementById('profile-modal');
+            const openProfileFromSidebar = document.getElementById('open-profile-modal');
+            const closeProfileBtn = document.getElementById('close-profile-btn');
+            const profileForm = document.getElementById('profile-form');
+            const sidebar = document.getElementById('sidebar');
+            const openSidebarBtn = document.getElementById('open-sidebar-btn');
+            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const chatHeader = chatWindow.querySelector('.chat-header'); // For dragging
+
+            let userProfile = {
+                name: '',
+                pin: ''
+            };
+            
+            // Load profile from DB
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.name) {
+                        userProfile.name = data.name;
+                        userProfile.pin = data.pin || '';
+                        
+                        // Initialize display names
+                        const displayUser = document.getElementById('display-username');
+                        if (displayUser) displayUser.textContent = userProfile.name;
+                        const sidebarUser = sidebar.querySelector('.sidebar-user strong');
+                        if (sidebarUser) sidebarUser.textContent = userProfile.name;
+                        
+                        // Populate the profile form fields
+                        const profileNameInput = document.getElementById('profile-name');
+                        const profilePinInput = document.getElementById('student-pin');
+                        if (profileNameInput) profileNameInput.value = userProfile.name;
+                        if (profilePinInput) profilePinInput.value = userProfile.pin;
+                    }
+                })
+                .catch(err => console.error('Error fetching profile:', err));
+            }
+
+            // --- Chatbot Settings & Voice Logic ---
+            const voiceSelect = document.getElementById('voice-select');
+            let voices = [];
+            let selectedVoice = null;
+
+            function populateVoiceList() {
+                voices = speechSynthesis.getVoices();
+                voiceSelect.innerHTML = '';
+                voices.forEach((voice, i) => {
+                    // Show only English voices for clarity
+                    if (voice.lang.includes('en')) {
+                        const option = document.createElement('option');
+                        option.textContent = `${voice.name} (${voice.lang})`;
+                        option.setAttribute('data-name', voice.name);
+                        voiceSelect.appendChild(option);
+                    }
+                });
+                // Restore saved voice if available
+                const savedVoiceName = localStorage.getItem('chatbotVoice');
+                if (savedVoiceName) {
+                    const savedOption = Array.from(voiceSelect.options).find(opt => opt.getAttribute('data-name') === savedVoiceName);
+                    if (savedOption) {
+                        savedOption.selected = true;
+                        selectedVoice = voices.find(voice => voice.name === savedVoiceName);
+                    }
+                }
+            }
+
+            populateVoiceList();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+
+            // --- Chatbot Voice Input Logic ---
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false; // Stop after one phrase
+                recognition.interimResults = false; // Do not show interim results
+                recognition.lang = 'te-IN'; // Set to Telugu (India) for primary recognition
+
+                recognition.onstart = () => {
+                    voiceChatBtn.style.color = '#e74c3c'; // Red color when listening
+                    chatInput.placeholder = 'Listening...';
+                };
+
+                recognition.onend = () => {
+                    voiceChatBtn.style.color = '#bdc3c7'; // Reset color
+                    chatInput.placeholder = 'Ask me anything...';
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    chatInput.value = transcript;
+                    // Automatically submit the form after getting the voice input
+                    chatForm.requestSubmit();
+                };
+
+                voiceChatBtn.addEventListener('click', () => {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Speech recognition could not be started: ", e);
+                    }
+                });
+            } else {
+                voiceChatBtn.style.display = 'none'; // Hide button if API is not supported
+            }
+
+            // --- Chatbot Drag and Resize Logic ---
+            let isDragging = false;
+            let offsetX, offsetY; // For dragging
+
+            // --- Window State Persistence ---
+            function loadChatWindowState() {
+                // On mobile, don't load saved position, just show it.
+                if (window.innerWidth <= 768) {
+                    return;
+                }
+
+                // Load position and size from localStorage
+                const savedTop = localStorage.getItem('chatWindowTop');
+                const savedLeft = localStorage.getItem('chatWindowLeft');
+                const savedWidth = localStorage.getItem('chatWindowWidth');
+                const savedHeight = localStorage.getItem('chatWindowHeight');
+
+                // Default values if nothing is saved
+                const defaultWidth = 350;
+                const defaultHeight = 550;
+                const defaultRightMargin = 2 * 16; // 2rem to px
+                const defaultBottomMargin = 6.5 * 16; // 6.5rem to px
+
+                if (savedTop && savedLeft && savedWidth && savedHeight && parseInt(savedWidth) > 0 && parseInt(savedHeight) > 0) {
+                    chatWindow.style.top = savedTop;
+                    chatWindow.style.left = savedLeft;
+                    chatWindow.style.width = savedWidth;
+                    chatWindow.style.height = savedHeight;
+                } else {
+                    // Calculate default position to be bottom-right
+                    chatWindow.style.width = `${defaultWidth}px`;
+                    chatWindow.style.height = `${defaultHeight}px`;
+                    chatWindow.style.top = `${window.innerHeight - defaultHeight - defaultBottomMargin}px`;
+                    chatWindow.style.left = `${window.innerWidth - defaultWidth - defaultRightMargin}px`;
+                }
+                // Load open/closed state
+                const isChatOpen = localStorage.getItem('isChatOpen') === 'true';
+                if (isChatOpen) {
+                    chatWindow.classList.add('active');
+                    chatIcon.style.display = 'none';
+                }
+            }
+
+            function saveChatWindowState() {
+                // Don't save position/size on mobile to avoid issues when switching to desktop
+                if (window.innerWidth <= 768) {
+                    return;
+                }
+
+                localStorage.setItem('chatWindowTop', chatWindow.style.top);
+                localStorage.setItem('chatWindowLeft', chatWindow.style.left);
+                localStorage.setItem('chatWindowWidth', chatWindow.style.width);
+                localStorage.setItem('chatWindowHeight', chatWindow.style.height);
+            }
+
+
+
+            // Dragging functionality
+            chatHeader.addEventListener('mousedown', (e) => {
+                // If a resize is in progress, or if the click is on a button, do not start dragging.
+                if (e.target.closest('#chat-settings-btn') || e.target.closest('#close-chat-btn')) {
+                    return;
+                }
+
+                isDragging = true;
+                offsetX = e.clientX - chatWindow.getBoundingClientRect().left;
+                offsetY = e.clientY - chatWindow.getBoundingClientRect().top;
+                chatWindow.style.cursor = 'grabbing';
+                document.body.style.userSelect = 'none'; // Prevent text selection during drag
+            });
+
+
+
+
+
+            // Toggle chat window
+            chatIcon.addEventListener('click', () => {
+                chatWindow.classList.toggle('active');
+                chatIcon.style.display = 'none'; // Hide icon when chat window is open
+                localStorage.setItem('isChatOpen', 'true'); // Save state
+            });
+
+            closeChatBtn.addEventListener('click', () => {
+                chatSettingsMenu.style.display = 'none'; // Hide settings on close
+                chatWindow.classList.remove('active');
+                localStorage.setItem('isChatOpen', 'false'); // Save state
+                chatIcon.style.display = 'flex'; // Show icon when chat window is closed
+            });
+
+
+            document.addEventListener('mousemove', (e) => {
+                // Disable dragging on mobile view
+                if (window.innerWidth <= 768) {
+                    isDragging = false;
+                    return;
+                }
+                // This is where the logic for moving or resizing the window happens.
+                // `isDragging` and `isResizing` are mutually exclusive due to the checks
+                // in the `mousedown` event listeners.
+
+                // Handle window dragging
+                if (isDragging) {
+                    let newLeft = e.clientX - offsetX;
+                    let newTop = e.clientY - offsetY;
+
+                    // Boundary checks for dragging
+                    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - chatWindow.offsetWidth));
+                    newTop = Math.max(0, Math.min(newTop, window.innerHeight - chatWindow.offsetHeight));
+
+                    chatWindow.style.left = `${newLeft}px`;
+                    chatWindow.style.top = `${newTop}px`;
+
+                }
+            });
+
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    chatWindow.style.cursor = 'grab'; // Reset cursor
+                    document.body.style.userSelect = ''; // Re-enable text selection
+                    saveChatWindowState(); // Save state after drag/resize
+                }
+            });
+
+
+
+
+            // Toggle settings menu
+            chatSettingsBtn.addEventListener('click', () => {
+                const isDisplayed = chatSettingsMenu.style.display === 'block';
+                chatSettingsMenu.style.display = isDisplayed ? 'none' : 'block';
+            });
+
+            // Handle voice selection change
+            voiceSelect.addEventListener('change', () => {
+                const selectedVoiceName = voiceSelect.selectedOptions[0].getAttribute('data-name');
+                selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
+                localStorage.setItem('chatbotVoice', selectedVoiceName); // Save preference
+            });
+
+            // --- Sidebar Logic ---
+            function toggleSidebar(active) {
+                sidebar.classList.toggle('active', active);
+                sidebarOverlay.style.display = active ? 'block' : 'none';
+            }
+
+            openSidebarBtn.addEventListener('click', () => toggleSidebar(true));
+            closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+            sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
+
+            // --- Modal Logic ---
+            function setupModal(modal, openBtn, closeBtn) {
+                openBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.classList.add('active');
+                    toggleSidebar(false);
+                });
+                closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.remove('active');
+                });
+            }
+
+            setupModal(profileModal, openProfileFromSidebar, closeProfileBtn);
+            setupModal(feedbackModal, openFeedbackFromSidebar, closeFeedbackBtn);
+
+            // Toggle feedback modal
+            // openFeedbackFromSidebar.addEventListener('click', (e) => {
+            //     e.preventDefault();
+            //     feedbackModal.classList.add('active');
+            //     toggleSidebar(false); // Close sidebar when modal opens
+            // });
+
+            closeFeedbackBtn.addEventListener('click', () => {
+                feedbackModal.classList.remove('active');
+            });
+
+            feedbackModal.addEventListener('click', (e) => {
+                if (e.target === feedbackModal) { // Click on overlay closes it
+                    feedbackModal.classList.remove('active');
+                }
+            });
+
+            // Handle Profile Form Submission (No actual submission, just for display)
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const profileNameInput = document.getElementById('profile-name');
+                const profilePinInput = document.getElementById('student-pin');
+                const newName = profileNameInput.value.trim();
+                const newPin = profilePinInput.value.trim();
+                const profileMessage = document.getElementById('profile-message');
+
+                if (newName && newPin) {
+                    profileMessage.textContent = 'Saving...';
+                    profileMessage.style.color = 'green';
+
+                    // Send profile details to Backend DB
+                    const token = localStorage.getItem('token');
+                    fetch('/api/profile', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ name: newName, pin: newPin })
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                // Save details locally for instant update
+                                userProfile.name = newName;
+                                userProfile.pin = newPin;
+                                
+                                // Update name in header and sidebar
+                                document.getElementById('display-username').textContent = newName;
+                                sidebar.querySelector('.sidebar-user strong').textContent = newName;
+                                profileMessage.textContent = result.message || 'Profile details saved!';
+                            } else {
+                                throw new Error(result.error || 'An unknown error occurred.');
+                            }
+                        }).catch(error => {
+                            profileMessage.textContent = `Error: ${error.message}`;
+                            profileMessage.style.color = 'red';
+                        });
+
+                    setTimeout(() => {
+                        profileModal.classList.remove('active');
+                        profileMessage.textContent = '';
+                    }, 1500);
+                }
+            });
+
+
+            // Handle feedback form submission
+            feedbackForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const feedbackText = document.getElementById('student-feedback').value.trim();
+
+                if (!userProfile.pin) {
+                    alert('Please update your profile with Name and PIN before submitting feedback.');
+                    return;
+                }
+                if (!feedbackText) {
+                    alert('Please enter your feedback.');
+                    return;
+                }
+
+                feedbackMessage.textContent = 'Submitting...';
+                feedbackMessage.style.color = '#333';
+
+                try {
+                    // Mocking successful fetch for feedback
+                    const response = await Promise.resolve({ json: () => Promise.resolve({ success: true }) });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        feedbackMessage.textContent = 'Thank you for your feedback!';
+                        feedbackMessage.style.color = 'green';
+                        feedbackForm.reset();
+                        setTimeout(() => {
+                            feedbackModal.classList.remove('active');
+                            feedbackMessage.textContent = ''; // Reset message
+                        }, 2000);
+                    } else {
+                        throw new Error(result.error || 'An unknown error occurred.');
+                    }
+                } catch (error) {
+                    feedbackMessage.textContent = `Error: ${error.message}`;
+                    feedbackMessage.style.color = 'red';
+                }
+            });
+
+            // Handle chat submission
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) return; // Do not send empty messages
+
+                // Display user message
+                addMessage(userMessage, 'user');
+                chatInput.value = '';
+
+                // Show loading indicator
+                const loadingIndicator = addMessage('...', 'loading');
+
+                try {
+                    const response = await fetch('api_gemini_chatbot.html', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+                    const data = await response.json();
+
+                    // Remove loading and show bot response
+                    loadingIndicator.remove();
+                    addMessage(data.reply || "Sorry, something went wrong.", 'bot');
+                } catch (error) {
+                    loadingIndicator.remove();
+                    addMessage("Error connecting to the bot. Please try again later.", 'bot');
+                    console.error('Chatbot Error:', error);
+                }
+            });
+
+            function addMessage(text, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${type}`;
+
+                // To prevent XSS, create p tag and set its text content
+                const p = document.createElement('p');
+                p.textContent = text;
+                messageDiv.appendChild(p);
+
+                // If the message is from the bot, add a speak icon
+                if (type === 'bot') {
+                    const speakIcon = document.createElement('span');
+                    speakIcon.className = 'material-symbols-outlined speak-icon';
+                    speakIcon.textContent = 'volume_up';
+                    messageDiv.appendChild(speakIcon);
+                }
+
+                chatBody.appendChild(messageDiv);
+                chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+                return messageDiv;
+            }
+
+            // Event listener for text-to-speech
+            chatBody.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('speak-icon')) {
+                    // If already speaking, cancel it.
+                    if (speechSynthesis.speaking) {
+                        speechSynthesis.cancel();
+                        return; // Stop further execution
+                    }
+
+                    // If not speaking, start speaking the new message.
+                    const messageText = e.target.previousElementSibling.textContent;
+                    const utterance = new SpeechSynthesisUtterance(messageText);
+                    if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                    }
+                    speechSynthesis.speak(utterance);
+                }
+            });
+
+            loadChatWindowState(); // Load window state on page load
+        });
+    </script>
+    <!-- Script to disable right-click and certain key combinations -->
+    <script>
+        // Disable right-click
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // Disable specific key combinations
+        document.addEventListener('keydown', function (e) {
+            // Normalize event object
+            var event = e || window.event;
+
+            // Block Ctrl+C, Ctrl+V, Ctrl+U (with alert)
+            if (event.ctrlKey && (event.keyCode === 67 || event.keyCode === 86 || event.keyCode === 85 || event.keyCode === 117)) {
+                alert('This website is protected against attempts to clone. Your IP has been duly recorded on our server and if you persist it will be forwarded to the competent authorities');
+                event.preventDefault();
+                return false;
+            }
+
+            // Disable F12
+            if (e.keyCode == 123) { e.preventDefault(); }
+            // Disable Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') { e.preventDefault(); }
+            // Disable Ctrl+Shift+J
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') { e.preventDefault(); }
+            // Disable Ctrl+U
+            if (e.ctrlKey && e.key === 'U') { e.preventDefault(); }
+
+            return true;
+        });
+    </script>
+
+    <!-- Page fade-in on load -->
+    <script>
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.4s ease';
+        window.addEventListener('load', () => {
+            requestAnimationFrame(() => { document.body.style.opacity = '1'; });
+        });
+    </script>
+</body>
+
+</html>
